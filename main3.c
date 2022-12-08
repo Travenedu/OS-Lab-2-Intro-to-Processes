@@ -23,7 +23,7 @@ int main(int argc, char* argv[]){
     srand(time(NULL));
 
     //sets random number of iterations for loop between 1 and 30
-    loop_iterations = (rand() % 30)+1);
+    loop_iterations = ((rand() % 30)+1);
 
     for (i = 1; i <= loop_iterations; i++) {
       printf("Child Pid: %d is going to sleep!\n", getpid());
