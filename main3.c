@@ -4,48 +4,51 @@
 #include <stdlib.h>
 #include <time.h>
 
-//Figure out where this should go
-int main(int argc, char* argv[]){
-  
+
+int main(int argc, char* argv[]){//
+  pid_t pid;
+  pid_t pid2;
   int loop_iterations;
+  int sleepTimer;
   int i;
+  int status;
+  srand(time(NULL));
+
+  //sets random number of iterations for loop between 1 and 30
+  loop_iterations = ((rand() % 30)+1);//30
+  //printf("Number of iterations: %d\n", loop_iterations);
+  
+  //sets random amount of time for child process to sleep
+  sleepTimer = (rand() % 10)+1;
 
   //Creates first child process from parent
-  int pid = fork();
+  pid = fork();
 
   //Creates a second child process from parent
   if (pid != 0){
-    fork();
+    pid2 = fork();
   }
 
-  //Child process loops through random amount of iterations
-  if (pid == 0){
-    srand(time(NULL));
+  if (pid != 0 && pid2 != 0){
 
-    //sets random number of iterations for loop between 1 and 30
-    loop_iterations = ((rand() % 30)+1);
+  //Signals parent process to wait for children to finish
+  waitpid(pid, &status, 0);
+  printf("Child Pid: %d has completed\n", pid);
 
-    for (i = 1; i <= loop_iterations; i++) {
+  //Signals parent process to wait for children to finish
+  waitpid(pid2, &status, 0);
+  printf("Child Pid: %d has completed\n", pid2);
+
+  }else{
+    //Child process loops through random amount of iterations
+    for (i = 0; i <= loop_iterations; i++) {
       printf("Child Pid: %d is going to sleep!\n", getpid());
       
       //Goes to sleep for random amount of time between 1 and 10
-      sleep((rand() % 10)+1);
+      sleep(sleepTimer);
       printf("Child Pid: %d is awake!\nWhere is my Parent: %d?\n", getpid(),getppid());
-
     }
     exit(0);
   }
-  //Signals parent process to wait for children to finish
-  int res = wait(NULL);
-
-  //if wait sends an error then there in no executing child process
-  if (res == -1){
-    //no child process
-    printf("There is no child process to wait for\n");
-  } else{
-    //There is a child process still executing
-    printf("Child Pid: %d has completed\n", res);
-  }
-
   return 0;
 }
